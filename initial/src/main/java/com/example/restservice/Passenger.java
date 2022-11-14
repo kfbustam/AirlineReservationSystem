@@ -7,6 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import javax.persistence.*;
 import java.util.List;
+import com.example.restservice.*;
 
 @Entity
 public class Passenger{
@@ -47,6 +48,10 @@ public class Passenger{
 
 	public String getFirstName() {
 		return this.firstname;
+	}
+
+	public Flight getFlight() {
+		return this.flight;
 	}
 
 	public void setFirstName(String firstName) {

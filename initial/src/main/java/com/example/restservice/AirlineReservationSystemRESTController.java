@@ -281,19 +281,23 @@ public class AirlineReservationSystemRESTController {
 				Date flightDepartureTime = flight.getDepartureTime();
 				Date flightArrivalTime = flight.getArrivalTime();
 
-				for (int j=0; j < flights.size(); j++) {
-					Date existingFlightDepartureTime = flights.get(j).getDepartureTime();
-					Date existingFlightArrivalTime = flights.get(j).getArrivalTime();
-					if(flightDepartureTime.compareTo(existingFlightArrivalTime) > 0 || existingFlightDepartureTime.compareTo(flightArrivalTime) > 0) {
-						if (flight.getSeatsLeft() == 0) {
-							return new ResponseEntity<String>("Sorry, flight number: " + flight + " has no more seats left", HttpStatus.BAD_REQUEST);
-						}
-						flight.setSeatsLeft(flight.getSeatsLeft() - 1);
-						flightRepository.saveAndFlush(flight);
-						flights.add(flight);
-					} else {
-						return new ResponseEntity<String>("Sorry, a flight you gave overlaps with an existing flight in this reservation" + departureDates.get(i), HttpStatus.BAD_REQUEST);
-					} 
+				if (flights.size() == 0) {
+					flights.add(flight);
+				} else {
+					for (int j=0; j < flights.size(); j++) {
+						Date existingFlightDepartureTime = flights.get(j).getDepartureTime();
+						Date existingFlightArrivalTime = flights.get(j).getArrivalTime();
+						if(flightDepartureTime.compareTo(existingFlightArrivalTime) > 0 || existingFlightDepartureTime.compareTo(flightArrivalTime) > 0) {
+							if (flight.getSeatsLeft() == 0) {
+								return new ResponseEntity<String>("Sorry, flight number: " + flight + " has no more seats left", HttpStatus.BAD_REQUEST);
+							}
+							flight.setSeatsLeft(flight.getSeatsLeft() - 1);
+							flightRepository.saveAndFlush(flight);
+							flights.add(flight);
+						} else {
+							return new ResponseEntity<String>("Sorry, a flight you gave overlaps with an existing flight in this reservation", HttpStatus.BAD_REQUEST);
+						} 
+					}
 				}
 				
 			}

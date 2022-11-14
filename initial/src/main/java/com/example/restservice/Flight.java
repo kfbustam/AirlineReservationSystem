@@ -60,6 +60,10 @@ public class Flight {
 		this.departureTime = departureTime;
 	}
 
+	public String getFlightNumber() {
+		return this.getFlightID().getFlightNumber();
+	}
+
 	public Date getDepartureDate() {
 		return this.getFlightID().getDepartureDate();
 	}
