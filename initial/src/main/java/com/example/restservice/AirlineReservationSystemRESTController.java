@@ -276,7 +276,26 @@ public class AirlineReservationSystemRESTController {
 				if (!flightFound.isPresent()) {
 					return new ResponseEntity<String>("Sorry, we could not find the flight with flight number: " + flightNumbers.get(i) + " and departure date: " + departureDates.get(i), HttpStatus.BAD_REQUEST);
 				}
-				flightFound.ifPresent((flight) -> flights.add(flight));
+				Flight flight = flightFound.map(actualFlight -> actualFlight).orElse(null);
+
+				Date flightDepartureTime = flight.getDepartureTime();
+				Date flightArrivalTime = flight.getArrivalTime();
+
+				for (int j=0; j < flights.size(); j++) {
+					Date existingFlightDepartureTime = flights.get(j).getDepartureTime();
+					Date existingFlightArrivalTime = flights.get(j).getArrivalTime();
+					if(flightDepartureTime.compareTo(existingFlightArrivalTime) > 0 || existingFlightDepartureTime.compareTo(flightArrivalTime) > 0) {
+						if (flight.getSeatsLeft() == 0) {
+							return new ResponseEntity<String>("Sorry, flight number: " + flight + " has no more seats left", HttpStatus.BAD_REQUEST);
+						}
+						flight.setSeatsLeft(flight.getSeatsLeft() - 1);
+						flightRepository.saveAndFlush(flight);
+						flights.add(flight);
+					} else {
+						return new ResponseEntity<String>("Sorry, a flight you gave overlaps with an existing flight in this reservation" + departureDates.get(i), HttpStatus.BAD_REQUEST);
+					} 
+				}
+				
 			}
 
 			Reservation reservation = new Reservation(passenger, flights);
@@ -578,7 +597,7 @@ public class AirlineReservationSystemRESTController {
 				).orElse(null);
 			} else {
 				Plane plane = new Plane(model, capacity, manufacturer, yearOfManufacture);
-				flightFoundOrCreated = new Flight(flightNumber, df.parse(departureDate), df.parse(departureTime), df.parse(arrivalTime), price, origin, destination, 0, description, plane, new ArrayList<Passenger>());
+				flightFoundOrCreated = new Flight(flightNumber, df.parse(departureDate), df.parse(departureTime), df.parse(arrivalTime), price, origin, destination, capacity, description, plane, new ArrayList<Passenger>());
 				flightRepository.saveAndFlush(flightFoundOrCreated);
 			}
 
@@ -645,8 +664,14 @@ public class AirlineReservationSystemRESTController {
 			if (!flightOptional.isPresent()) {
 				return new ResponseEntity<String>("Sorry, could not find flight with flightNumber: " + flightNumber + " and departureDate: " + departureDate, HttpStatus.BAD_REQUEST);
 			}
+			
+			Flight flight = flightOptional.map(foundFlight -> foundFlight).orElse(null);
 
-			flightOptional.ifPresent(flight -> flightRepository.delete(flight));
+			if (flight.getPassengers().size() > 0) {
+				return new ResponseEntity<String>("Sorry, flight cannot be deleted because it needs to carry at least one passenger", HttpStatus.BAD_REQUEST);
+			}
+
+			flightRepository.delete(flight);
 
 			JSONObject json = new JSONObject()
 				.put(
