@@ -34,6 +34,9 @@ public class AirlineReservationSystemRESTController {
   public ResponseEntity<String> getPassenger(@PathVariable String id, @RequestParam(name="xml", required=false, defaultValue="false") String isXML) {
 		String errorMessage = "{\"BadRequest\": {\"code\": \" HttpStatus.BAD_REQUEST \",\"msg\": \" Sorry, the requested passenger with ID " + id + " does not exist\"}}";
 		HttpHeaders responseHeaders = new HttpHeaders();
+		if (isXML.equals("true")) {
+			responseHeaders.add("Content-Type", "application/xml; charset=utf-8");
+		}
 		try {
 			Optional<Passenger> optionalPassenger = passengerRepository.findById(id);
 
@@ -48,7 +51,7 @@ public class AirlineReservationSystemRESTController {
 					.put("phone", passenger.getPhone())
 					.put("reservations", passenger.getReservations());
 					ResponseEntity<String> res = new ResponseEntity<String>(
-						isXML == "true" ? XML.toString(json) : json.toString(),
+						isXML.equals("true") ? "<Response>" + XML.toString(json) + "</Response>"  : json.toString(),
 						responseHeaders,
 						200
 					);
@@ -72,6 +75,9 @@ public class AirlineReservationSystemRESTController {
 		@RequestParam(name="xml", required=false, defaultValue="false") String isXML
 	) {
 		HttpHeaders responseHeaders = new HttpHeaders();
+		if (isXML.equals("true")) {
+			responseHeaders.add("Content-Type", "application/xml; charset=utf-8");
+		}
 		try {
 			Optional<Passenger> optionalPassenger = passengerRepository.findByPhone(phone);
 
@@ -92,7 +98,7 @@ public class AirlineReservationSystemRESTController {
 				.put("reservations", passengerResponse.getReservations());
 
 			ResponseEntity<String> res = new ResponseEntity<String>(
-				isXML == "true" ? XML.toString(json) : json.toString(),
+				isXML.equals("true") ? "<Response>" + XML.toString(json) + "</Response>"  : json.toString(),
 				responseHeaders,
 				200
 			);
@@ -115,6 +121,9 @@ public class AirlineReservationSystemRESTController {
 		@RequestParam(name="xml", required=false, defaultValue="false") String isXML
 	) {
 		HttpHeaders responseHeaders = new HttpHeaders();
+		if (isXML.equals("true")) {
+			responseHeaders.add("Content-Type", "application/xml; charset=utf-8");
+		}
 		try {
 			String errorMsg = "";
 			Optional<Passenger> passengerFound = passengerRepository.findById(id);
@@ -145,7 +154,7 @@ public class AirlineReservationSystemRESTController {
 				.put("reservations", passengerResponse.getReservations());
 
 			ResponseEntity<String> res = new ResponseEntity<String>(
-				isXML == "true" ? XML.toString(json) : json.toString(),
+				isXML.equals("true") ? "<Response>" + XML.toString(json) + "</Response>"  : json.toString(),
 				responseHeaders,
 				200
 			);
@@ -163,6 +172,9 @@ public class AirlineReservationSystemRESTController {
 		@RequestParam(name="xml", required=false, defaultValue="false") String isXML
 	) {
 		HttpHeaders responseHeaders = new HttpHeaders();
+		if (isXML.equals("true")) {
+			responseHeaders.add("Content-Type", "application/xml; charset=utf-8");
+		}
 		try {
 			Optional<Passenger> passengerFound = passengerRepository.findById(id);
 			if (!passengerFound.isPresent()) {
@@ -199,7 +211,7 @@ public class AirlineReservationSystemRESTController {
 				);
 
 			ResponseEntity<String> res = new ResponseEntity<String>(
-				isXML == "true" ? XML.toString(json) : json.toString(),
+				isXML.equals("true") ? "<Response>" + XML.toString(json) + "</Response>"  : json.toString(),
 				responseHeaders,
 				200
 			);
@@ -215,6 +227,9 @@ public class AirlineReservationSystemRESTController {
   public ResponseEntity<String> getReservation(@RequestParam(name="reservationNumber", required=true) String reservationNumber, @RequestParam(name="xml", required=false, defaultValue="false") String isXML) {
 		String errorMessage = "{\"BadRequest\": {\"code\": \" HttpStatus.BAD_REQUEST \",\"msg\": \" Sorry, the requested reservation with number " + reservationNumber + " does not exist\"}}";
 		HttpHeaders responseHeaders = new HttpHeaders();
+		if (isXML.equals("true")) {
+			responseHeaders.add("Content-Type", "application/xml; charset=utf-8");
+		}
 		try {
 			Optional<Reservation> optionalReservation = reservationRepository.findById(reservationNumber);
 
@@ -232,7 +247,7 @@ public class AirlineReservationSystemRESTController {
 					.put("passenger", reservation.getPassenger())
 					.put("reservationNumber", reservation.getReservationNumber());
 					ResponseEntity<String> res = new ResponseEntity<String>(
-						isXML == "true" ? XML.toString(json) : json.toString(),
+						isXML.equals("true") ? "<Response>" + XML.toString(json) + "</Response>"  : json.toString(),
 						responseHeaders,
 						200
 					);
@@ -259,6 +274,9 @@ public class AirlineReservationSystemRESTController {
 		}
 
 		HttpHeaders responseHeaders = new HttpHeaders();
+		if (isXML.equals("true")) {
+			responseHeaders.add("Content-Type", "application/xml; charset=utf-8");
+		}
 		try {
 			Optional<Passenger> optionalPassenger = passengerRepository.findById(passengerId);
 
@@ -334,7 +352,7 @@ public class AirlineReservationSystemRESTController {
 			.put("reservationNumber", reservation.getReservationNumber());
 
 			ResponseEntity<String> res = new ResponseEntity<String>(
-				isXML == "true" ? XML.toString(json) : json.toString(),
+				isXML.equals("true") ? "<Response>" + XML.toString(json) + "</Response>"  : json.toString(),
 				responseHeaders,
 				200
 			);
@@ -363,6 +381,9 @@ public class AirlineReservationSystemRESTController {
 		}
 
 		HttpHeaders responseHeaders = new HttpHeaders();
+		if (isXML.equals("true")) {
+			responseHeaders.add("Content-Type", "application/xml; charset=utf-8");
+		}
 		try {
 			Optional<Reservation> optionalReservation = reservationRepository.findById(reservationNumber);
 
@@ -433,7 +454,7 @@ public class AirlineReservationSystemRESTController {
 			.put("reservationNumber", reservation.getReservationNumber());
 
 			ResponseEntity<String> res = new ResponseEntity<String>(
-				isXML == "true" ? XML.toString(json) : json.toString(),
+				isXML.equals("true") ? "<Response>" + XML.toString(json) + "</Response>"  : json.toString(),
 				responseHeaders,
 				200
 			);
@@ -451,6 +472,9 @@ public class AirlineReservationSystemRESTController {
 		@RequestParam(name="xml", required=false, defaultValue="false") String isXML
 	) {
 		HttpHeaders responseHeaders = new HttpHeaders();
+		if (isXML.equals("true")) {
+			responseHeaders.add("Content-Type", "application/xml; charset=utf-8");
+		}
 		try {
 			Optional<Reservation> optionalReservation = reservationRepository.findById(reservationNumber);
 
@@ -483,7 +507,7 @@ public class AirlineReservationSystemRESTController {
 				);
 
 			ResponseEntity<String> res = new ResponseEntity<String>(
-				isXML == "true" ? XML.toString(json) : json.toString(),
+				isXML.equals("true") ? "<Response>" + XML.toString(json) + "</Response>"  : json.toString(),
 				responseHeaders,
 				200
 			);
@@ -503,6 +527,9 @@ public class AirlineReservationSystemRESTController {
 	) {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd");
 		HttpHeaders responseHeaders = new HttpHeaders();
+		if (isXML.equals("true")) {
+			responseHeaders.add("Content-Type", "application/xml; charset=utf-8");
+		}
 		try {
 			Optional<Flight> flightOptional = flightRepository.findById(new FlightID(flightNumber, df.parse(departureDate)));
 
@@ -550,7 +577,7 @@ public class AirlineReservationSystemRESTController {
 						)
 						.put("passengers", new JSONArray(listOfPassengersAsJSON));
 					ResponseEntity<String> res = new ResponseEntity<String>(
-						isXML == "true" ? XML.toString(json) : json.toString(),
+						isXML.equals("true") ? "<Response>" + XML.toString(json) + "</Response>"  : json.toString(),
 						responseHeaders,
 						200
 					);
@@ -581,6 +608,9 @@ public class AirlineReservationSystemRESTController {
 		@RequestParam(name="xml", required=false, defaultValue="false") String isXML
 	) {
 		HttpHeaders responseHeaders = new HttpHeaders();
+		if (isXML.equals("true")) {
+			responseHeaders.add("Content-Type", "application/xml; charset=utf-8");
+		}
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd");
 		try {
 			Optional<Flight> flightOptional = flightRepository.findById(new FlightID(flightNumber, df.parse(departureDate)));
@@ -643,7 +673,7 @@ public class AirlineReservationSystemRESTController {
 				)
 				.put("passengers", new JSONArray(listOfPassengersAsJSON));
 			ResponseEntity<String> res = new ResponseEntity<String>(
-				isXML == "true" ? XML.toString(json) : json.toString(),
+				isXML.equals("true") ? "<Response>" + XML.toString(json) + "</Response>"  : json.toString(),
 				responseHeaders,
 				200
 			);
@@ -661,6 +691,9 @@ public class AirlineReservationSystemRESTController {
 		@RequestParam(name="xml", required=false, defaultValue="false") String isXML
 	) {
 		HttpHeaders responseHeaders = new HttpHeaders();
+		if (isXML.equals("true")) {
+			responseHeaders.add("Content-Type", "application/xml; charset=utf-8");
+		}
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd");
 		try {
 			Optional<Flight> flightOptional = flightRepository.findById(new FlightID(flightNumber, df.parse(departureDate)));
@@ -692,7 +725,7 @@ public class AirlineReservationSystemRESTController {
 				);
 
 			ResponseEntity<String> res = new ResponseEntity<String>(
-				isXML == "true" ? XML.toString(json) : json.toString(),
+				isXML.equals("true") ? "<Response>" + XML.toString(json) + "</Response>"  : json.toString(),
 				responseHeaders,
 				200
 			);
