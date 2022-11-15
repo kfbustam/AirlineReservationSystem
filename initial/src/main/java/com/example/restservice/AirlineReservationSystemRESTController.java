@@ -99,7 +99,7 @@ public class AirlineReservationSystemRESTController {
 
       return res;
 		} catch (Exception ex) {
-			return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
   }
 
@@ -152,7 +152,7 @@ public class AirlineReservationSystemRESTController {
 
       return res;
 		} catch (Exception ex) {
-			return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
   }
 
@@ -206,7 +206,7 @@ public class AirlineReservationSystemRESTController {
 
       return res;
 		} catch (Exception ex) {
-			return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
   }
 
@@ -340,7 +340,7 @@ public class AirlineReservationSystemRESTController {
 			);
 			return res;
 		} catch (Exception ex) {
-			return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
   }
 
@@ -440,7 +440,7 @@ public class AirlineReservationSystemRESTController {
 
 			return res;
 		} catch (Exception ex) {
-			return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
   }
 
@@ -490,7 +490,7 @@ public class AirlineReservationSystemRESTController {
 
       return res;
 		} catch (Exception ex) {
-			return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
   }
 
@@ -559,7 +559,7 @@ public class AirlineReservationSystemRESTController {
 			)
         .orElseGet(() -> new ResponseEntity<String>("Flight is not found", HttpStatus.BAD_REQUEST));
 		} catch (Exception ex) {
-			return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
   }
 
@@ -649,7 +649,7 @@ public class AirlineReservationSystemRESTController {
 			);
 			return res;
 		} catch (Exception ex) {
-			return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
   }
 
@@ -699,7 +699,7 @@ public class AirlineReservationSystemRESTController {
 
       return res;
 		} catch (Exception ex) {
-			return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
   }
 }
