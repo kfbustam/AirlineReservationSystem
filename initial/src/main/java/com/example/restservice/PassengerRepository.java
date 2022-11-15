@@ -5,6 +5,15 @@ import com.example.restservice.Passenger;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The interface Passenger repository.
+ */
 public interface PassengerRepository extends JpaRepository<Passenger, String> {
-  Optional<Passenger> findByPhone(String phone); 
+    /**
+     * Find by phone optional.
+     *
+     * @param phone the phone
+     * @return the optional
+     */
+    Optional<Passenger> findByPhone(String phone);
 }

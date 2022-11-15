@@ -7,6 +7,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * The type Plane.
+ */
 @Embeddable
 public class Plane {
 	private String model;
@@ -14,46 +17,96 @@ public class Plane {
 	private String manufacturer;
 	private int yearOfManufacture;
 
-	public Plane () {}
+    /**
+     * Instantiates a new Plane.
+     */
+    public Plane () {}
 
-	public Plane(String model, int capacity, String manufacturer, int yearOfManufacture) {
+    /**
+     * Instantiates a new Plane.
+     *
+     * @param model             the model
+     * @param capacity          the capacity
+     * @param manufacturer      the manufacturer
+     * @param yearOfManufacture the year of manufacture
+     */
+    public Plane(String model, int capacity, String manufacturer, int yearOfManufacture) {
 		this.model = model;
 		this.capacity = capacity;
 		this.manufacturer = manufacturer;
 		this.yearOfManufacture = yearOfManufacture;
 	}
 
-	public String getModel() {
+    /**
+     * Gets model.
+     *
+     * @return the model
+     */
+    public String getModel() {
 		return this.model;
 	}
 
-	public void setModel(String model) {
+    /**
+     * Sets model.
+     *
+     * @param model the model
+     */
+    public void setModel(String model) {
 		this.model = model;
 	}
 
-	public int getCapacity() {
+    /**
+     * Gets capacity.
+     *
+     * @return the capacity
+     */
+    public int getCapacity() {
 		return this.capacity;
 	}
 
-	public void setCapacity(int capacity) {
+    /**
+     * Sets capacity.
+     *
+     * @param capacity the capacity
+     */
+    public void setCapacity(int capacity) {
 		this.capacity = capacity;
 	}
 
-	public String getManufacturer() {
+    /**
+     * Gets manufacturer.
+     *
+     * @return the manufacturer
+     */
+    public String getManufacturer() {
 		return this.manufacturer;
 	}
 
 
-
-	public void setManufacturer(String manufacturer) {
+    /**
+     * Sets manufacturer.
+     *
+     * @param manufacturer the manufacturer
+     */
+    public void setManufacturer(String manufacturer) {
 		this.manufacturer = manufacturer;
 	}
 
-	public int getYearOfManufacturer() {
+    /**
+     * Gets year of manufacturer.
+     *
+     * @return the year of manufacturer
+     */
+    public int getYearOfManufacturer() {
 		return this.yearOfManufacture;
 	}
-	
-	public void setYearOfManufacture(int yearOfManufacture) {
+
+    /**
+     * Sets year of manufacture.
+     *
+     * @param yearOfManufacture the year of manufacture
+     */
+    public void setYearOfManufacture(int yearOfManufacture) {
 		this.yearOfManufacture = yearOfManufacture;
 	}
 }

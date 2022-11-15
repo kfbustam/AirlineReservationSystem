@@ -18,24 +18,29 @@ import org.springframework.http.HttpStatus;
 import java.text.SimpleDateFormat;
 import java.text.Format;
 
+/**
+ * The type Airline reservation system rest controller.
+ */
 @RestController
 public class AirlineReservationSystemRESTController {
-	@Autowired
-	private FlightRepository flightRepository;
 
 	@Autowired
-	private PassengerRepository passengerRepository;
+	private Service service;
 
-	@Autowired
-	private ReservationRepository reservationRepository;
-
-  @GetMapping("passenger/{id}")
-  @ResponseBody
-  public ResponseEntity<String> getPassenger(@PathVariable String id, @RequestParam(name="xml", required=false, defaultValue="false") String isXML) {
+	/**
+	 * Gets passenger.
+	 *
+	 * @param id    the id
+	 * @param isXML the is xml
+	 * @return the passenger
+	 */
+	@GetMapping("passenger/{id}")
+	@ResponseBody
+	public ResponseEntity<String> getPassenger(@PathVariable String id, @RequestParam(name="xml", required=false, defaultValue="false") String isXML) {
 		String errorMessage = "{\"BadRequest\": {\"code\": \" HttpStatus.BAD_REQUEST \",\"msg\": \" Sorry, the requested passenger with ID " + id + " does not exist\"}}";
 		HttpHeaders responseHeaders = new HttpHeaders();
 		try {
-			Optional<Passenger> optionalPassenger = passengerRepository.findById(id);
+			Optional<Passenger> optionalPassenger = service.findPassenger(id);
 
 			return optionalPassenger.map(
 				passenger -> {
@@ -55,15 +60,26 @@ public class AirlineReservationSystemRESTController {
 					return res;
 				}
 			)
-        .orElseGet(() -> new ResponseEntity<String>(errorMessage, HttpStatus.BAD_REQUEST));
+		.orElseGet(() -> new ResponseEntity<String>(errorMessage, HttpStatus.BAD_REQUEST));
 		} catch (Exception ex) {
 			return new ResponseEntity<String>(errorMessage, HttpStatus.BAD_REQUEST);
 		}
-  }
+	}
 
-  @PostMapping("passenger")
-  @ResponseBody
-  public ResponseEntity<String> createPassenger(
+	/**
+	 * Create passenger response entity.
+	 *
+	 * @param firstname the firstname
+	 * @param lastname  the lastname
+	 * @param birthyear the birthyear
+	 * @param gender    the gender
+	 * @param phone     the phone
+	 * @param isXML     the is xml
+	 * @return the response entity
+	 */
+	@PostMapping("passenger")
+	@ResponseBody
+	public ResponseEntity<String> createPassenger(
 		@RequestParam(name="firstname", required=true) String firstname,
 		@RequestParam(name="lastname", required=true) String lastname,
 		@RequestParam(name="birthyear", required=true) int birthyear,
@@ -73,14 +89,13 @@ public class AirlineReservationSystemRESTController {
 	) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		try {
-			Optional<Passenger> optionalPassenger = passengerRepository.findByPhone(phone);
+			Optional<Passenger> optionalPassenger = service.findPassengerByPhone(phone);
 
 			if (optionalPassenger == null) {
 				return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": \"another passenger with the same number already exists.\"}}", HttpStatus.BAD_REQUEST);
 			}
 
-			Passenger newPassenger = new Passenger(firstname, lastname, birthyear, gender, phone);
-			Passenger passengerResponse = passengerRepository.saveAndFlush(newPassenger);
+			Passenger passengerResponse = service.createPassenger(firstname, lastname, birthyear, gender, phone);
 
 			JSONObject json = new JSONObject()
 				.put("id", passengerResponse.getId())
@@ -97,15 +112,27 @@ public class AirlineReservationSystemRESTController {
 				200
 			);
 
-      return res;
+	  return res;
 		} catch (Exception ex) {
 			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
-  }
+	}
 
-  @PutMapping("passenger/{id}")
-  @ResponseBody
-  public ResponseEntity<String> updatePassenger(
+	/**
+	 * Update passenger response entity.
+	 *
+	 * @param id        the id
+	 * @param firstname the firstname
+	 * @param lastname  the lastname
+	 * @param birthyear the birthyear
+	 * @param gender    the gender
+	 * @param phone     the phone
+	 * @param isXML     the is xml
+	 * @return the response entity
+	 */
+	@PutMapping("passenger/{id}")
+	@ResponseBody
+	public ResponseEntity<String> updatePassenger(
 		@PathVariable String id,
 		@RequestParam(name="firstname", required=true) String firstname,
 		@RequestParam(name="lastname", required=true) String lastname,
@@ -117,7 +144,7 @@ public class AirlineReservationSystemRESTController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		try {
 			String errorMsg = "";
-			Optional<Passenger> passengerFound = passengerRepository.findById(id);
+			Optional<Passenger> passengerFound = service.findPassenger(id);
 			if (!passengerFound.isPresent()) {
 				return new ResponseEntity<String>("Sorry, the requested passenger with ID " + id + " does not exist", HttpStatus.BAD_REQUEST);
 			}
@@ -128,7 +155,7 @@ public class AirlineReservationSystemRESTController {
 				passenger.setBirthYear(birthyear);
 				passenger.setGender(gender);
 				passenger.setPhone(phone);
-				return passengerRepository.saveAndFlush(passenger);
+				return service.updatePassenger(passenger);
 			}).orElse(null);
 
 			if (passengerResponse == null) {
@@ -150,43 +177,37 @@ public class AirlineReservationSystemRESTController {
 				200
 			);
 
-      return res;
+	  return res;
 		} catch (Exception ex) {
 			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
-  }
+	}
 
-  @DeleteMapping("passenger/{id}")
-  @ResponseBody
-  public ResponseEntity<String> deletePassenger(
+	/**
+	 * Delete passenger response entity.
+	 *
+	 * @param id    the id
+	 * @param isXML the is xml
+	 * @return the response entity
+	 */
+	@DeleteMapping("passenger/{id}")
+	@ResponseBody
+	public ResponseEntity<String> deletePassenger(
 		@PathVariable String id,
 		@RequestParam(name="xml", required=false, defaultValue="false") String isXML
 	) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		try {
-			Optional<Passenger> passengerFound = passengerRepository.findById(id);
+			Optional<Passenger> passengerFound = service.findPassenger(id);
 			if (!passengerFound.isPresent()) {
 				return new ResponseEntity<String>("Sorry, the requested passenger with ID " + id + " does not exist", HttpStatus.BAD_REQUEST);
 			}
 
-			passengerFound.ifPresent((passenger) -> {
-				List<Reservation> passengerReservations = passenger.getReservations();
-				for (int i = 0; i < passengerReservations.size(); i++) 
-				{
-					List<Flight> passengerFlights = passengerReservations.get(i).getFlights();
-					for (int j = 0; j < passengerFlights.size(); j++) 
-					{
-						passengerFlights.get(j).getPassengers().removeIf(passengerInFlight -> passengerInFlight.getId() == id);
-						flightRepository.saveAndFlush(passengerFlights.get(j));
-					}
-					reservationRepository.delete(passengerReservations.get(i));
-				}
-				passengerRepository.delete(passenger);
-			});
+			service.deletePassenger(passengerFound);
 
 			JSONObject json = new JSONObject()
 				.put(
-					"Response", 
+					"Response",
 					new JSONObject()
 						.put(
 							"code",
@@ -204,19 +225,26 @@ public class AirlineReservationSystemRESTController {
 				200
 			);
 
-      return res;
+	  return res;
 		} catch (Exception ex) {
 			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
-  }
+	}
 
-  @GetMapping("reservation/{reservationNumber}")
-  @ResponseBody
-  public ResponseEntity<String> getReservation(@RequestParam(name="reservationNumber", required=true) String reservationNumber, @RequestParam(name="xml", required=false, defaultValue="false") String isXML) {
+	/**
+	 * Gets reservation.
+	 *
+	 * @param reservationNumber the reservation number
+	 * @param isXML             the is xml
+	 * @return the reservation
+	 */
+	@GetMapping("reservation/{reservationNumber}")
+	@ResponseBody
+	public ResponseEntity<String> getReservation(@RequestParam(name="reservationNumber", required=true) String reservationNumber, @RequestParam(name="xml", required=false, defaultValue="false") String isXML) {
 		String errorMessage = "{\"BadRequest\": {\"code\": \" HttpStatus.BAD_REQUEST \",\"msg\": \" Sorry, the requested reservation with number " + reservationNumber + " does not exist\"}}";
 		HttpHeaders responseHeaders = new HttpHeaders();
 		try {
-			Optional<Reservation> optionalReservation = reservationRepository.findById(reservationNumber);
+			Optional<Reservation> optionalReservation = service.findReservation(reservationNumber);
 
 			if (!optionalReservation.isPresent()) {
 				return new ResponseEntity<String>("Sorry, could not find reservation with reservation number: " + reservationNumber, HttpStatus.BAD_REQUEST);
@@ -239,18 +267,27 @@ public class AirlineReservationSystemRESTController {
 					return res;
 				}
 			)
-        .orElseGet(() -> new ResponseEntity<String>(errorMessage, HttpStatus.BAD_REQUEST));
+		.orElseGet(() -> new ResponseEntity<String>(errorMessage, HttpStatus.BAD_REQUEST));
 		} catch (Exception ex) {
 			return new ResponseEntity<String>(errorMessage, HttpStatus.BAD_REQUEST);
 		}
-  }
-	
+	}
+
+	/**
+	 * Create reservation response entity.
+	 *
+	 * @param passengerId    the passenger id
+	 * @param departureDates the departure dates
+	 * @param flightNumbers  the flight numbers
+	 * @param isXML          the is xml
+	 * @return the response entity
+	 */
 	@PostMapping("reservation")
-  @ResponseBody
-  public ResponseEntity<String> createReservation(
+	@ResponseBody
+	public ResponseEntity<String> createReservation(
 		@RequestParam(name="passengerId", required=true) String passengerId,
 		@RequestParam(name="departureDates", required=true) List<String> departureDates,
-		@RequestParam(name="flightNumbers", required=true) List<String> flightNumbers, 
+		@RequestParam(name="flightNumbers", required=true) List<String> flightNumbers,
 		@RequestParam(name="xml", required=false, defaultValue="false") String isXML
 	) {
 
@@ -260,7 +297,7 @@ public class AirlineReservationSystemRESTController {
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		try {
-			Optional<Passenger> optionalPassenger = passengerRepository.findById(passengerId);
+			Optional<Passenger> optionalPassenger = service.findPassenger(passengerId);
 
 			if (!optionalPassenger.isPresent()) {
 				return new ResponseEntity<String>("Sorry, could not find passenger with ID: " + passengerId, HttpStatus.BAD_REQUEST);
@@ -269,9 +306,9 @@ public class AirlineReservationSystemRESTController {
 			Passenger passenger = optionalPassenger.map(pass -> pass).orElse(null);
 
 			List<Flight> flights = new ArrayList<Flight>();
-			
+
 			for (int i=0; i<flightNumbers.size(); i++) {
-				SimpleDateFormat dateFormatter=new SimpleDateFormat("yyyy-mm-dd");  
+				SimpleDateFormat dateFormatter=new SimpleDateFormat("yyyy-mm-dd");
 				Optional<Flight> flightFound = flightRepository.findById(new FlightID(flightNumbers.get(i),dateFormatter.parse(departureDates.get(i))));
 				if (!flightFound.isPresent()) {
 					return new ResponseEntity<String>("Sorry, we could not find the flight with flight number: " + flightNumbers.get(i) + " and departure date: " + departureDates.get(i), HttpStatus.BAD_REQUEST);
@@ -296,10 +333,10 @@ public class AirlineReservationSystemRESTController {
 							flights.add(flight);
 						} else {
 							return new ResponseEntity<String>("Sorry, a flight you gave overlaps with an existing flight in this reservation", HttpStatus.BAD_REQUEST);
-						} 
+						}
 					}
 				}
-				
+
 			}
 
 			Reservation reservation = new Reservation(passenger, flights);
@@ -342,15 +379,26 @@ public class AirlineReservationSystemRESTController {
 		} catch (Exception ex) {
 			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
-  }
+	}
 
-  @PutMapping("reservation/{reservationNumber}")
-  @ResponseBody
-  public ResponseEntity<String> updateReservation(
+	/**
+	 * Update reservation response entity.
+	 *
+	 * @param reservationNumber     the reservation number
+	 * @param flightsAdded          the flights added
+	 * @param departureDatesAdded   the departure dates added
+	 * @param flightsRemoved        the flights removed
+	 * @param departureDatesRemoved the departure dates removed
+	 * @param isXML                 the is xml
+	 * @return the response entity
+	 */
+	@PutMapping("reservation/{reservationNumber}")
+	@ResponseBody
+	public ResponseEntity<String> updateReservation(
 		@PathVariable String reservationNumber,
 		@RequestParam(name="flightsAdded", required=true) List<String> flightsAdded,
 		@RequestParam(name="departureDatesAdded", required=true) List<String> departureDatesAdded,
-		@RequestParam(name="flightsRemoved", required=true) List<String> flightsRemoved, 
+		@RequestParam(name="flightsRemoved", required=true) List<String> flightsRemoved,
 		@RequestParam(name="departureDatesRemoved", required=true) List<String> departureDatesRemoved,
 		@RequestParam(name="xml", required=false, defaultValue="false") String isXML
 	) {
@@ -364,7 +412,7 @@ public class AirlineReservationSystemRESTController {
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		try {
-			Optional<Reservation> optionalReservation = reservationRepository.findById(reservationNumber);
+			Optional<Reservation> optionalReservation = service.findReservation(reservationNumber);
 
 			Reservation reservation = optionalReservation.map(reserve -> reserve).orElse(null);
 
@@ -374,15 +422,15 @@ public class AirlineReservationSystemRESTController {
 
 			List<Flight> reservationFlights = reservation.getFlights();
 
-			for (int j = 0; j < flightsRemoved.size(); j++) 
+			for (int j = 0; j < flightsRemoved.size(); j++)
 			{
 				Format df = new SimpleDateFormat("yyyy-mm-dd");
 				String flightToBeRemoved = flightsRemoved.get(j);
 				String departureDatesToBeRemoved = departureDatesRemoved.get(j);
 				reservationFlights.removeIf(
-					(reservationFlight) -> 
+					(reservationFlight) ->
 						(
-							reservationFlight.getFlightID().getFlightNumber() == flightToBeRemoved && 
+							reservationFlight.getFlightID().getFlightNumber() == flightToBeRemoved &&
 							df.format(reservationFlight.getFlightID().getDepartureDate()) == departureDatesToBeRemoved
 						)
 				);
@@ -390,7 +438,7 @@ public class AirlineReservationSystemRESTController {
 				reservationRepository.saveAndFlush(reservation);
 			}
 
-			for (int j = 0; j < flightsAdded.size(); j++) 
+			for (int j = 0; j < flightsAdded.size(); j++)
 			{
 				SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd");
 				Optional<Flight> flightOptional = flightRepository.findById(new FlightID(flightsAdded.get(j), df.parse(departureDatesAdded.get(j))));
@@ -442,17 +490,24 @@ public class AirlineReservationSystemRESTController {
 		} catch (Exception ex) {
 			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
-  }
+	}
 
-  @DeleteMapping("reservation/{reservationNumber}")
-  @ResponseBody
-  public ResponseEntity<String> deleteReservation(
+	/**
+	 * Delete reservation response entity.
+	 *
+	 * @param reservationNumber the reservation number
+	 * @param isXML             the is xml
+	 * @return the response entity
+	 */
+	@DeleteMapping("reservation/{reservationNumber}")
+	@ResponseBody
+	public ResponseEntity<String> deleteReservation(
 		@PathVariable String reservationNumber,
 		@RequestParam(name="xml", required=false, defaultValue="false") String isXML
 	) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		try {
-			Optional<Reservation> optionalReservation = reservationRepository.findById(reservationNumber);
+			Optional<Reservation> optionalReservation = service.findReservation(reservationNumber);
 
 			if (!optionalReservation.isPresent()) {
 				return new ResponseEntity<String>("Sorry, could not find reservation with reservation number: " + reservationNumber, HttpStatus.BAD_REQUEST);
@@ -460,7 +515,7 @@ public class AirlineReservationSystemRESTController {
 
 			optionalReservation.ifPresent((reservation) -> {
 				List<Flight> passengerFlights = reservation.getFlights();
-				for (int j = 0; j < passengerFlights.size(); j++) 
+				for (int j = 0; j < passengerFlights.size(); j++)
 				{
 					passengerFlights.get(j).getPassengers().removeIf(passengerInFlight -> passengerInFlight.getId() == reservation.getPassenger().getId());
 					flightRepository.saveAndFlush(passengerFlights.get(j));
@@ -470,7 +525,7 @@ public class AirlineReservationSystemRESTController {
 
 			JSONObject json = new JSONObject()
 				.put(
-					"Response", 
+					"Response",
 					new JSONObject()
 						.put(
 							"code",
@@ -488,15 +543,23 @@ public class AirlineReservationSystemRESTController {
 				200
 			);
 
-      return res;
+	  return res;
 		} catch (Exception ex) {
 			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
-  }
+	}
 
+	/**
+	 * Gets flight.
+	 *
+	 * @param flightNumber  the flight number
+	 * @param departureDate the departure date
+	 * @param isXML         the is xml
+	 * @return the flight
+	 */
 	@GetMapping("flight/{flightNumber}/{departureDate}")
-  @ResponseBody
-  public ResponseEntity<String> getFlight(
+	@ResponseBody
+	public ResponseEntity<String> getFlight(
 		@PathVariable String flightNumber,
 		@PathVariable String departureDate,
 		@RequestParam(name="xml", required=false, defaultValue="false") String isXML
@@ -541,7 +604,7 @@ public class AirlineReservationSystemRESTController {
 						.put("origin", flight.getOrigin())
 						.put("seatsLeft", flight.getSeatsLeft())
 						.put("description", flight.getDescription())
-						.put("plane", 
+						.put("plane",
 							new JSONObject()
 								.put("model", plane.getModel())
 								.put("capacity", plane.getCapacity())
@@ -557,15 +620,33 @@ public class AirlineReservationSystemRESTController {
 					return res;
 				}
 			)
-        .orElseGet(() -> new ResponseEntity<String>("Flight is not found", HttpStatus.BAD_REQUEST));
+		.orElseGet(() -> new ResponseEntity<String>("Flight is not found", HttpStatus.BAD_REQUEST));
 		} catch (Exception ex) {
 			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
-  }
+	}
 
-  @PostMapping("flight/{flightNumber}/{departureDate}")
-  @ResponseBody
-  public ResponseEntity<String> upsertFlight(
+	/**
+	 * Upsert flight response entity.
+	 *
+	 * @param flightNumber      the flight number
+	 * @param departureDate     the departure date
+	 * @param price             the price
+	 * @param origin            the origin
+	 * @param destination       the destination
+	 * @param departureTime     the departure time
+	 * @param arrivalTime       the arrival time
+	 * @param description       the description
+	 * @param capacity          the capacity
+	 * @param model             the model
+	 * @param manufacturer      the manufacturer
+	 * @param yearOfManufacture the year of manufacture
+	 * @param isXML             the is xml
+	 * @return the response entity
+	 */
+	@PostMapping("flight/{flightNumber}/{departureDate}")
+	@ResponseBody
+	public ResponseEntity<String> upsertFlight(
 		@PathVariable(name="flightNumber", required=true) String flightNumber,
 		@PathVariable(name="departureDate", required=true) String departureDate,
 		@RequestParam(name="price", required=true) int price,
@@ -634,7 +715,7 @@ public class AirlineReservationSystemRESTController {
 				.put("origin", flightFoundOrCreated.getOrigin())
 				.put("seatsLeft", flightFoundOrCreated.getSeatsLeft())
 				.put("description", flightFoundOrCreated.getDescription())
-				.put("plane", 
+				.put("plane",
 					new JSONObject()
 						.put("model", plane.getModel())
 						.put("capacity", plane.getCapacity())
@@ -651,13 +732,21 @@ public class AirlineReservationSystemRESTController {
 		} catch (Exception ex) {
 			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
-  }
+	}
 
+	/**
+	 * Delete flight response entity.
+	 *
+	 * @param flightNumber  the flight number
+	 * @param departureDate the departure date
+	 * @param isXML         the is xml
+	 * @return the response entity
+	 */
 	@DeleteMapping("airline/{flightNumber}/{departureDate}")
-  @ResponseBody
-  public ResponseEntity<String> deleteFlight(
+	@ResponseBody
+	public ResponseEntity<String> deleteFlight(
 		@PathVariable(name="flightNumber", required=true) String flightNumber,
-		@PathVariable(name="departureDate", required=true) String departureDate, 
+		@PathVariable(name="departureDate", required=true) String departureDate,
 		@RequestParam(name="xml", required=false, defaultValue="false") String isXML
 	) {
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -668,7 +757,7 @@ public class AirlineReservationSystemRESTController {
 			if (!flightOptional.isPresent()) {
 				return new ResponseEntity<String>("Sorry, could not find flight with flightNumber: " + flightNumber + " and departureDate: " + departureDate, HttpStatus.BAD_REQUEST);
 			}
-			
+
 			Flight flight = flightOptional.map(foundFlight -> foundFlight).orElse(null);
 
 			if (flight.getPassengers().size() > 0) {
@@ -679,7 +768,7 @@ public class AirlineReservationSystemRESTController {
 
 			JSONObject json = new JSONObject()
 				.put(
-					"Response", 
+					"Response",
 					new JSONObject()
 						.put(
 							"code",
@@ -697,9 +786,9 @@ public class AirlineReservationSystemRESTController {
 				200
 			);
 
-      return res;
+	  return res;
 		} catch (Exception ex) {
 			return new ResponseEntity<String>("{\"BadRequest\": {\"code\": \" 400 \",\"msg\": " + ex.getMessage() +"}}", HttpStatus.BAD_REQUEST);
 		}
-  }
+	}
 }
