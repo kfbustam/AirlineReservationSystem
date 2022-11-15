@@ -215,7 +215,7 @@ public class AirlineReservationSystemRESTController {
 				return new ResponseEntity<String>("Sorry, the requested passenger with ID " + id + " does not exist", HttpStatus.BAD_REQUEST);
 			}
 
-			service.deletePassenger(passengerFound);
+			service.deletePassenger(passengerFound, id);
 
 			JSONObject json = new JSONObject()
 				.put(
@@ -327,7 +327,7 @@ public class AirlineReservationSystemRESTController {
 
 			for (int i=0; i<flightNumbers.size(); i++) {
 				SimpleDateFormat dateFormatter=new SimpleDateFormat("yyyy-mm-dd");
-				Optional<Flight> flightFound = flightRepository.findById(new FlightID(flightNumbers.get(i),dateFormatter.parse(departureDates.get(i))));
+				Optional<Flight> flightFound = service.findFlightByID(new FlightID(flightNumbers.get(i),dateFormatter.parse(departureDates.get(i))));
 				if (!flightFound.isPresent()) {
 					return new ResponseEntity<String>("Sorry, we could not find the flight with flight number: " + flightNumbers.get(i) + " and departure date: " + departureDates.get(i), HttpStatus.BAD_REQUEST);
 				}
@@ -347,7 +347,7 @@ public class AirlineReservationSystemRESTController {
 								return new ResponseEntity<String>("Sorry, flight number: " + flight + " has no more seats left", HttpStatus.BAD_REQUEST);
 							}
 							flight.setSeatsLeft(flight.getSeatsLeft() - 1);
-							flightRepository.saveAndFlush(flight);
+							service.upsertFlight(flight);
 							flights.add(flight);
 						} else {
 							return new ResponseEntity<String>("Sorry, a flight you gave overlaps with an existing flight in this reservation", HttpStatus.BAD_REQUEST);
@@ -358,7 +358,7 @@ public class AirlineReservationSystemRESTController {
 			}
 
 			Reservation reservation = new Reservation(passenger, flights);
-			reservationRepository.saveAndFlush(reservation);
+			service.upsertReservation(reservation);
 
 			ArrayList<JSONObject> listOfFlightsAsJSON = new ArrayList<JSONObject>();
 			int totalPriceOfAllFlights = 0;
@@ -456,16 +456,16 @@ public class AirlineReservationSystemRESTController {
 						)
 				);
 				reservation.setFlights(reservationFlights);
-				reservationRepository.saveAndFlush(reservation);
+				service.upsertReservation(reservation);
 			}
 
 			for (int j = 0; j < flightsAdded.size(); j++)
 			{
 				SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd");
-				Optional<Flight> flightOptional = flightRepository.findById(new FlightID(flightsAdded.get(j), df.parse(departureDatesAdded.get(j))));
+				Optional<Flight> flightOptional = service.findFlightByID(new FlightID(flightsAdded.get(j), df.parse(departureDatesAdded.get(j))));
 				flightOptional.ifPresent(flight -> reservationFlights.add(flight));
 				reservation.setFlights(reservationFlights);
-				reservationRepository.saveAndFlush(reservation);
+				service.upsertReservation(reservation);
 			}
 
 
@@ -542,9 +542,9 @@ public class AirlineReservationSystemRESTController {
 				for (int j = 0; j < passengerFlights.size(); j++)
 				{
 					passengerFlights.get(j).getPassengers().removeIf(passengerInFlight -> passengerInFlight.getId() == reservation.getPassenger().getId());
-					flightRepository.saveAndFlush(passengerFlights.get(j));
+					service.upsertFlight(passengerFlights.get(j));
 				}
-				reservationRepository.delete(reservation);
+				service.deleteReservation(reservation);
 			});
 
 			JSONObject json = new JSONObject()
@@ -594,7 +594,7 @@ public class AirlineReservationSystemRESTController {
 			responseHeaders.add("Content-Type", "application/xml; charset=utf-8");
 		}
 		try {
-			Optional<Flight> flightOptional = flightRepository.findById(new FlightID(flightNumber, df.parse(departureDate)));
+			Optional<Flight> flightOptional = service.findFlightByID(new FlightID(flightNumber, df.parse(departureDate)));
 
 			if (!flightOptional.isPresent()) {
 				return new ResponseEntity<String>("Sorry, could not find flight with flightNumber: " + flightNumber + " and departureDate: " + departureDate, HttpStatus.BAD_REQUEST);
@@ -694,7 +694,7 @@ public class AirlineReservationSystemRESTController {
 		}
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd");
 		try {
-			Optional<Flight> flightOptional = flightRepository.findById(new FlightID(flightNumber, df.parse(departureDate)));
+			Optional<Flight> flightOptional = service.findFlightByID(new FlightID(flightNumber, df.parse(departureDate)));
 
 			Flight flightFoundOrCreated = null;
 			if (flightOptional.isPresent()) {
@@ -707,13 +707,13 @@ public class AirlineReservationSystemRESTController {
 						flight.setDestination(destination);
 						flight.setDescription(description);
 						flight.setPlane(new Plane(model, capacity, manufacturer, yearOfManufacture));
-						return flightRepository.saveAndFlush(flight);
+						return service.upsertFlight(flight);
 					}
 				).orElse(null);
 			} else {
 				Plane plane = new Plane(model, capacity, manufacturer, yearOfManufacture);
 				flightFoundOrCreated = new Flight(flightNumber, df.parse(departureDate), df.parse(departureTime), df.parse(arrivalTime), price, origin, destination, capacity, description, plane, new ArrayList<Passenger>());
-				flightRepository.saveAndFlush(flightFoundOrCreated);
+				service.upsertFlight(flightFoundOrCreated);
 			}
 
 			Plane plane = flightFoundOrCreated.getPlane();
@@ -785,7 +785,7 @@ public class AirlineReservationSystemRESTController {
 		}
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd");
 		try {
-			Optional<Flight> flightOptional = flightRepository.findById(new FlightID(flightNumber, df.parse(departureDate)));
+			Optional<Flight> flightOptional = service.findFlightByID(new FlightID(flightNumber, df.parse(departureDate)));
 
 			if (!flightOptional.isPresent()) {
 				return new ResponseEntity<String>("Sorry, could not find flight with flightNumber: " + flightNumber + " and departureDate: " + departureDate, HttpStatus.BAD_REQUEST);
@@ -797,7 +797,7 @@ public class AirlineReservationSystemRESTController {
 				return new ResponseEntity<String>("Sorry, flight cannot be deleted because it needs to carry at least one passenger", HttpStatus.BAD_REQUEST);
 			}
 
-			flightRepository.delete(flight);
+			service.deleteFlight(flight);
 
 			JSONObject json = new JSONObject()
 				.put(

@@ -36,7 +36,7 @@ public class Service {
         return passengerRepository.saveAndFlush(passenger);
     }
 
-    public void deletePassenger(Optional<Passenger> passengerFound) {
+    public void deletePassenger(Optional<Passenger> passengerFound, String id) {
         passengerFound.ifPresent((passenger) -> {
             List<Reservation> passengerReservations = passenger.getReservations();
             for (int i = 0; i < passengerReservations.size(); i++)
@@ -55,5 +55,25 @@ public class Service {
 
     public Optional<Reservation> findReservation(String reservationNumber) {
         return reservationRepository.findById(reservationNumber);
+    }
+
+    public Optional<Flight> findFlightByID(FlightID flightID) {
+        return flightRepository.findById(flightID);
+    }
+
+    public Flight upsertFlight(Flight flight) {
+        return flightRepository.saveAndFlush(flight);
+    }
+
+    public void deleteFlight(Flight flight) {
+        flightRepository.delete(flight);
+    }
+
+    public Reservation upsertReservation(Reservation reservation) {
+        return reservationRepository.saveAndFlush(reservation);
+    }
+
+    public void deleteReservation(Reservation reservation) {
+        reservationRepository.delete(reservation);
     }
 }
