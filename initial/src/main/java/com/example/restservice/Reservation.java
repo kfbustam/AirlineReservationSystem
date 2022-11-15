@@ -9,6 +9,9 @@ import javax.validation.constraints.NotEmpty;
 import org.hibernate.annotations.GenericGenerator;
 import java.util.List;
 
+/**
+ * The type Reservation.
+ */
 @Entity
 public class Reservation {
 
@@ -29,58 +32,127 @@ public class Reservation {
 	@NotEmpty
 	private List<Flight> flights;    // Full form only, CANNOT be empty, ordered chronologically by departureTime
 
-	public Reservation() {}
+    /**
+     * Instantiates a new Reservation.
+     */
+    public Reservation() {}
 
-	public Reservation(Passenger passenger, List<Flight> flights) {
+    /**
+     * Instantiates a new Reservation.
+     *
+     * @param passenger the passenger
+     * @param flights   the flights
+     */
+    public Reservation(Passenger passenger, List<Flight> flights) {
 		this.passenger = passenger;
 		this.flights = flights;
 	}
 
-	public String getReservationNumber() {
+    /**
+     * Gets reservation number.
+     *
+     * @return the reservation number
+     */
+    public String getReservationNumber() {
 		return this.reservationNumber;
 	}
 
-	public void setReservationNumber(String reservationNumber) {
+    /**
+     * Sets reservation number.
+     *
+     * @param reservationNumber the reservation number
+     */
+    public void setReservationNumber(String reservationNumber) {
 		this.reservationNumber = reservationNumber;
 	}
 
-	public Passenger getPassenger() {
+    /**
+     * Gets passenger.
+     *
+     * @return the passenger
+     */
+    public Passenger getPassenger() {
 		return this.passenger;
 	}
 
-	public void setPassenger(Passenger passenger) {
+    /**
+     * Sets passenger.
+     *
+     * @param passenger the passenger
+     */
+    public void setPassenger(Passenger passenger) {
 		this.passenger = passenger;
 	}
 
-	public String getOrigin() {
+    /**
+     * Gets origin.
+     *
+     * @return the origin
+     */
+    public String getOrigin() {
 		return this.origin;
 	}
 
-	public void setOrigin(String origin) {
+    /**
+     * Sets origin.
+     *
+     * @param origin the origin
+     */
+    public void setOrigin(String origin) {
 		this.origin = origin;
 	}
 
-	public String getDestination() {
+    /**
+     * Gets destination.
+     *
+     * @return the destination
+     */
+    public String getDestination() {
 		return this.destination;
 	}
 
-	public void setDestination(String destination) {
+    /**
+     * Sets destination.
+     *
+     * @param destination the destination
+     */
+    public void setDestination(String destination) {
 		this.destination = destination;
 	}
 
-	public int getPrice() {
+    /**
+     * Gets price.
+     *
+     * @return the price
+     */
+    public int getPrice() {
 		return this.price;
 	}
 
-	public void setModel(int price) {
+    /**
+     * Sets model.
+     *
+     * @param price the price
+     */
+    public void setModel(int price) {
 		this.price = price;
 	}
 
-	public List<Flight> getFlights() {
+    /**
+     * Gets flights.
+     *
+     * @return the flights
+     */
+    public List<Flight> getFlights() {
 		return this.flights;
 	}
 
-	public void setFlights(List<Flight> flights) {
+    /**
+     * Sets flights.
+     *
+     * @param flights the flights
+     */
+    public void setFlights(List<Flight> flights) {
 		this.flights = flights;
 	}
 }

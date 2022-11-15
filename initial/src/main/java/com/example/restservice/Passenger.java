@@ -9,6 +9,9 @@ import javax.persistence.*;
 import java.util.List;
 import com.example.restservice.*;
 
+/**
+ * The type Passenger.
+ */
 @Entity
 public class Passenger{
 
@@ -32,9 +35,21 @@ public class Passenger{
 	})
 	private Flight flight;
 
-	public Passenger() {}
+    /**
+     * Instantiates a new Passenger.
+     */
+    public Passenger() {}
 
-	public Passenger(String firstname, String lastname, int birthyear, String gender, String phone) {
+    /**
+     * Instantiates a new Passenger.
+     *
+     * @param firstname the firstname
+     * @param lastname  the lastname
+     * @param birthyear the birthyear
+     * @param gender    the gender
+     * @param phone     the phone
+     */
+    public Passenger(String firstname, String lastname, int birthyear, String gender, String phone) {
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.birthyear = birthyear;
@@ -42,59 +57,129 @@ public class Passenger{
 		this.phone = phone;
 	}
 
-	public String getId() {
+    /**
+     * Gets id.
+     *
+     * @return the id
+     */
+    public String getId() {
 		return this.id;
 	}
 
-	public String getFirstName() {
+    /**
+     * Gets first name.
+     *
+     * @return the first name
+     */
+    public String getFirstName() {
 		return this.firstname;
 	}
 
-	public Flight getFlight() {
+    /**
+     * Gets flight.
+     *
+     * @return the flight
+     */
+    public Flight getFlight() {
 		return this.flight;
 	}
 
-	public void setFirstName(String firstName) {
+    /**
+     * Sets first name.
+     *
+     * @param firstName the first name
+     */
+    public void setFirstName(String firstName) {
 		this.firstname = firstName;
 	}
 
-	public String getLastName() {
+    /**
+     * Gets last name.
+     *
+     * @return the last name
+     */
+    public String getLastName() {
 		return this.lastname;
 	}
 
-	public void setLastName(String lastname) {
+    /**
+     * Sets last name.
+     *
+     * @param lastname the lastname
+     */
+    public void setLastName(String lastname) {
 		this.lastname = lastname;
 	}
 
-	public int getBirthYear() {
+    /**
+     * Gets birth year.
+     *
+     * @return the birth year
+     */
+    public int getBirthYear() {
 		return this.birthyear;
 	}
 
-	public void setBirthYear(int birthyear) {
+    /**
+     * Sets birth year.
+     *
+     * @param birthyear the birthyear
+     */
+    public void setBirthYear(int birthyear) {
 		this.birthyear = birthyear;
 	}
 
-	public String getGender() {
+    /**
+     * Gets gender.
+     *
+     * @return the gender
+     */
+    public String getGender() {
 		return this.gender;
 	}
 
-	public void setGender(String gender) {
+    /**
+     * Sets gender.
+     *
+     * @param gender the gender
+     */
+    public void setGender(String gender) {
 		this.gender = gender;
 	}
 
-	public String getPhone() {
+    /**
+     * Gets phone.
+     *
+     * @return the phone
+     */
+    public String getPhone() {
 		return this.phone;
 	}
 
-	public void setPhone(String phone) {
+    /**
+     * Sets phone.
+     *
+     * @param phone the phone
+     */
+    public void setPhone(String phone) {
 		this.phone = phone;
 	}
 
-	public List<Reservation> getReservations() {
+    /**
+     * Gets reservations.
+     *
+     * @return the reservations
+     */
+    public List<Reservation> getReservations() {
 		return this.reservations;
 	}
 
-	public void setReservations(List<Reservation> reservations) {
+    /**
+     * Sets reservations.
+     *
+     * @param reservations the reservations
+     */
+    public void setReservations(List<Reservation> reservations) {
 		this.reservations = reservations;
 	}
 }
